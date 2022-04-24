@@ -12,5 +12,6 @@ import (
 )
 
 func setCTXOS(ctx *context.Context) {
+	log.Printf("path_linux.go setCTXOS")
 	ctx.SetOs(config.OS_TYPE_LINUX)
 }

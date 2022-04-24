@@ -21,6 +21,7 @@ type lumberjackLogCreator struct {
 }
 
 func (t *lumberjackLogCreator) CreateLogger(config telegraf_logger.LogConfig) (io.Writer, error) {
+	log.Printf("lumberjack_logger.go CreateLogger")
 	var writer, defaultWriter io.Writer
 	defaultWriter = os.Stderr
 	if config.Logfile != "" {
@@ -41,6 +42,7 @@ func (t *lumberjackLogCreator) CreateLogger(config telegraf_logger.LogConfig) (i
 }
 
 func init() {
+	log.Printf("lumberjack_logger.go init")
 	llc := &lumberjackLogCreator{}
 	telegraf_logger.RegisterLogger(LogTargetLumberjack, llc)
 }

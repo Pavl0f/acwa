@@ -130,6 +130,7 @@ func Cleanup(fname string) error {
 // watchFlags calls fsnotify.WatchFlags for the input filename and flags, creating
 // a new Watcher if the previous Watcher was closed.
 func (shared *InotifyTracker) addWatch(winfo *watchInfo) error {
+	log.Printf("inotify_tracker.go addWatch")
 	shared.mux.Lock()
 	defer shared.mux.Unlock()
 
@@ -160,6 +161,7 @@ func (shared *InotifyTracker) addWatch(winfo *watchInfo) error {
 // removeWatch calls fsnotify.RemoveWatch for the input filename and closes the
 // corresponding events channel.
 func (shared *InotifyTracker) removeWatch(winfo *watchInfo) error {
+	log.Printf("inotify_tracker.go removeWatch")
 	shared.mux.Lock()
 
 	ch := shared.chans[winfo.fname]
@@ -194,6 +196,7 @@ func (shared *InotifyTracker) removeWatch(winfo *watchInfo) error {
 
 // sendEvent sends the input event to the appropriate Tail.
 func (shared *InotifyTracker) sendEvent(event fsnotify.Event) {
+	log.Printf("inotify_tracker.go sendEvent")
 	name := filepath.Clean(event.Name)
 
 	shared.mux.Lock()
@@ -212,6 +215,8 @@ func (shared *InotifyTracker) sendEvent(event fsnotify.Event) {
 // run starts the goroutine in which the shared struct reads events from its
 // Watcher's Event channel and sends the events to the appropriate Tail.
 func (shared *InotifyTracker) run() {
+	log.Printf("inotify_tracker.go run")
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Printf("E! [logfile] Failed to create Watcher")
@@ -219,6 +224,7 @@ func (shared *InotifyTracker) run() {
 	shared.watcher = watcher
 
 	for {
+		log.Printf("inotify_tracker.go run for")
 		select {
 		case winfo := <-shared.watch:
 			shared.error <- shared.addWatch(winfo)

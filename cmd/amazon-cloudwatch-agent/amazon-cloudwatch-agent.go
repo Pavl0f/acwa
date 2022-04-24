@@ -150,8 +150,12 @@ func reloadLoop(
 				ticker := time.NewTicker(30 * time.Second)
 				defer ticker.Stop()
 				for {
+
+					log.Printf("amazon-cloudwatch-agent.go in loop 30[s]")
+
 					select {
 					case <-ticker.C:
+						
 						if info, err := os.Stat(envConfigPath); err == nil && info.ModTime().After(previousModTime) {
 							if err := loadEnvironmentVariables(envConfigPath); err != nil {
 								log.Printf("E! Unable to load env variables: %v", err)
@@ -170,6 +174,7 @@ func reloadLoop(
 							previousModTime = info.ModTime()
 						}
 					case <-ctx.Done():
+						log.Printf("amazon-cloudwatch-agent.go in loop 30[s] DONE.")
 						return
 					}
 				}
@@ -186,6 +191,8 @@ func reloadLoop(
 // loadEnvironmentVariables updates OS ENV vars with key/val from the given JSON file.
 // The "config-translator" program populates that file.
 func loadEnvironmentVariables(path string) error {
+	log.Printf("amazon-cloudwatch-agent.go loadEnvironmentVariables")
+
 	if path == "" {
 		return fmt.Errorf("No env config file specified")
 	}
@@ -208,6 +215,8 @@ func loadEnvironmentVariables(path string) error {
 }
 
 func getEnvConfigPath(configPath, envConfigPath string) (string, error) {
+	log.Printf("amazon-cloudwatch-agent.go getEnvConfigPath")
+
 	if configPath == "" {
 		return "", fmt.Errorf("No config file specified")
 	}
@@ -220,6 +229,7 @@ func getEnvConfigPath(configPath, envConfigPath string) (string, error) {
 }
 
 func runAgent(ctx context.Context,
+	log.Printf("amazon-cloudwatch-agent.go runAgent")
 	inputFilters []string,
 	outputFilters []string,
 ) error {
@@ -574,6 +584,7 @@ func main() {
 
 // Return true if Telegraf should create a Windows service.
 func windowsRunAsService() bool {
+	
 	if *fService != "" {
 		return true
 	}

@@ -64,6 +64,7 @@ func (fw *InotifyFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
 }
 
 func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChanges, error) {
+	log.Printf("inotify.go ChangeEvents")
 	err := Watch(fw.Filename)
 	if err != nil {
 		return nil, err
@@ -77,6 +78,7 @@ func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 		events := Events(fw.Filename)
 
 		for {
+			log.Printf("inotify.go ChangeEvents for")
 			prevSize := fw.Size
 
 			var evt fsnotify.Event

@@ -168,7 +168,7 @@ package-prepare-rpm:
 	cp $(BASE_SPACE)/packaging/dependencies/cwagent-otel-collector.service $(BUILD_SPACE)/private/linux/amd64/rpm/amazon-cloudwatch-agent-pre-pkg/
 	cp $(BASE_SPACE)/packaging/linux/cwagent-otel-collector.conf $(BUILD_SPACE)/private/linux/amd64/rpm/amazon-cloudwatch-agent-pre-pkg/
 	cp $(AOC_BASE_SPACE)/config.yaml $(BUILD_SPACE)/private/linux/amd64/rpm/amazon-cloudwatch-agent-pre-pkg/predefined-config-data
-    cp -rf $(BASE_SPACE)/Tools $(BUILD_SPACE)/
+	cp -rf $(BASE_SPACE)/Tools $(BUILD_SPACE)/
 	
     # # arm64 rpm
 	# mkdir -p $(BUILD_SPACE)/private/linux/arm64/rpm/amazon-cloudwatch-agent-pre-pkg

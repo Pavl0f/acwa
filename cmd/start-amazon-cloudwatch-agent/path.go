@@ -29,6 +29,8 @@ const (
 )
 
 func startAgent(writer io.WriteCloser) error {
+	log.Printf("path.go startAgent")
+
 	if os.Getenv(config.RUN_IN_CONTAINER) == config.RUN_IN_CONTAINER_TRUE {
 		// Use exec so PID 1 changes to agent from start-agent.
 		execArgs := []string{
@@ -79,6 +81,7 @@ func startAgent(writer io.WriteCloser) error {
 }
 
 func generateMergedJsonConfigMap() (map[string]interface{}, error) {
+	log.Printf("path.go generateMergedJsonConfigMap")
 	ctx := context.CurrentContext()
 	setCTXOS(ctx)
 	ctx.SetInputJsonFilePath(jsonConfigPath)
@@ -88,6 +91,7 @@ func generateMergedJsonConfigMap() (map[string]interface{}, error) {
 }
 
 func init() {
+	log.Printf("path.go init")
 	jsonConfigPath = AGENT_DIR_LINUX + "/etc/" + JSON
 	jsonDirPath = AGENT_DIR_LINUX + "/etc/" + JSON_DIR_LINUX
 	envConfigPath = AGENT_DIR_LINUX + "/etc/" + ENV

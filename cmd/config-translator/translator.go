@@ -69,6 +69,7 @@ func initFlags() {
  *			remove:		only process existing files
  */
 func main() {
+	log.Printf("translator.go main")
 	initFlags()
 	defer func() {
 		if r := recover(); r != nil {
