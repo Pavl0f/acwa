@@ -11,7 +11,7 @@ import (
 	"os"
 	"sync"
 	"time"
-
+	"log"
 	"github.com/aws/amazon-cloudwatch-agent/plugins/inputs/logfile/tail/watch"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/models"
