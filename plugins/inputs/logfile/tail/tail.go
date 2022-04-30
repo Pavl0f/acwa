@@ -218,7 +218,7 @@ func (tail *Tail) reopen() error {
 // before finding the end-of-line bytes(often io.EOF), it returns the data read
 // before the error and the error itself.
 func (tail *Tail) readLine() (string, error) {
-	log.Printf("tail.go reopen readLine")
+	// log.Printf("tail.go reopen readLine")
 	if tail.Config.IsUTF16 {
 		return tail.readlineUtf16()
 	}

@@ -7,6 +7,7 @@
 package main
 
 import (
+	"log"
 	"github.com/aws/amazon-cloudwatch-agent/translator/config"
 	"github.com/aws/amazon-cloudwatch-agent/translator/context"
 )

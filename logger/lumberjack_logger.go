@@ -6,6 +6,7 @@ package logger
 import (
 	"io"
 	"os"
+	"log"
 	"path/filepath"
 
 	telegraf_logger "github.com/influxdata/telegraf/logger"

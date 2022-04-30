@@ -181,6 +181,7 @@ func reloadLoop(
 			}(ctx, envConfigPath)
 		}
 
+		log.Printf("runAgent!!!")
 		err := runAgent(ctx, inputFilters, outputFilters)
 		if err != nil && err != context.Canceled {
 			log.Fatalf("E! [telegraf] Error running agent: %v", err)
@@ -229,7 +230,6 @@ func getEnvConfigPath(configPath, envConfigPath string) (string, error) {
 }
 
 func runAgent(ctx context.Context,
-	log.Printf("amazon-cloudwatch-agent.go runAgent")
 	inputFilters []string,
 	outputFilters []string,
 ) error {
