@@ -326,7 +326,7 @@ func (ts *tailerSrc) runSaveState() {
 }
 
 func (ts *tailerSrc) saveState(offset int64) error {
-	log.Printf("[CUSTOM] tailersrc.go saveState " + strconv.Itoa(offset) + " " + ts.tailer.Filename)
+	log.Printf("[CUSTOM] tailersrc.go saveState " + strconv.FormatInt(offset, 10) + " " + ts.tailer.Filename)
 	
 	if ts.stateFilePath == "" || offset == 0 {
 		return nil

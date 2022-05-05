@@ -107,8 +107,10 @@ func TailFile(filename string, config Config) (*Tail, error) {
 	}
 
 	if t.Poll {
+		log.Printf("[CUSTOM] tail.go TailFile NewPollingFileWatcher")
 		t.watcher = watch.NewPollingFileWatcher(filename)
 	} else {
+		log.Printf("[CUSTOM] tail.go TailFile NewInotifyFileWatcher")
 		t.watcher = watch.NewInotifyFileWatcher(filename)
 	}
 

@@ -99,12 +99,13 @@ func (l *LogAgent) Run(ctx context.Context) {
 		select {
 		case <-t.C:
 			for _, c := range l.collections {
-				log.Printf("[CUSTOM] logs.go Run loop2")
 				srcs := c.FindLogSrc()
+				log.Printf("[CUSTOM] logs.go Run loop2")
+				log.Printf(srcs)
 				for _, src := range srcs {
 					log.Printf("[CUSTOM] logs.go Run loop3")
 					dname := src.Destination()
-					backend, ok := l.backends[dname]
+					backend, ok := l.backends[dname]					
 					if !ok {
 						log.Printf("E! [logagent] Failed to find destination %v for log source %v/%v(%v) ", dname, src.Group(), src.Stream(), src.Description())
 						continue
@@ -123,7 +124,7 @@ func (l *LogAgent) Run(ctx context.Context) {
 }
 
 func (l *LogAgent) runSrcToDest(src LogSrc, dest LogDest) {
-	log.Printf("[CUSTOM] logs.go runSrcToDest")
+	// log.Printf("[CUSTOM] logs.go runSrcToDest")
 	eventsCh := make(chan LogEvent)
 	defer src.Stop()
 
