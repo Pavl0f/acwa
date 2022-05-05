@@ -134,7 +134,7 @@ func TailFile(filename string, config Config) (*Tail, error) {
 // it may readed one line in the chan(tail.Lines),
 // so it may lost one line.
 func (tail *Tail) Tell() (offset int64, err error) {
-	log.Printf("[CUSTOM] tail.go Tell")
+	// log.Printf("[CUSTOM] tail.go Tell")
 	if tail.file == nil {
 		return
 	}
@@ -155,14 +155,14 @@ func (tail *Tail) Tell() (offset int64, err error) {
 
 // Stop stops the tailing activity.
 func (tail *Tail) Stop() error {
-	log.Printf("[CUSTOM] tail.go Stop")
+	// log.Printf("[CUSTOM] tail.go Stop")
 	tail.Kill(nil)
 	return tail.Wait()
 }
 
 // StopAtEOF stops tailing as soon as the end of the file is reached.
 func (tail *Tail) StopAtEOF() error {
-	log.Printf("[CUSTOM] tail.go StopAtEOF")
+	// log.Printf("[CUSTOM] tail.go StopAtEOF")
 	tail.Kill(errStopAtEOF)
 	return tail.Wait()
 }
@@ -170,7 +170,7 @@ func (tail *Tail) StopAtEOF() error {
 var errStopAtEOF = errors.New("tail: stop at eof")
 
 func (tail *Tail) close() {
-	log.Printf("[CUSTOM] tail.go close")
+	// log.Printf("[CUSTOM] tail.go close")
 	if tail.dropCnt > 0 {
 		tail.Logger.Errorf("Dropped %v lines for stopped tail for file %v", tail.dropCnt, tail.Filename)
 	}
@@ -179,7 +179,7 @@ func (tail *Tail) close() {
 }
 
 func (tail *Tail) closeFile() {
-	log.Printf("[CUSTOM] tail.go closeFile")
+	// log.Printf("[CUSTOM] tail.go closeFile")
 	if tail.file != nil {
 		tail.file.Close()
 		tail.file = nil
@@ -187,10 +187,10 @@ func (tail *Tail) closeFile() {
 }
 
 func (tail *Tail) reopen() error {
-	log.Printf("[CUSTOM] tail.go reopen")
+	// log.Printf("[CUSTOM] tail.go reopen")
 	tail.closeFile()
 	for {
-		log.Printf("[CUSTOM] tail.go reopen loop")
+		// log.Printf("[CUSTOM] tail.go reopen loop")
 		var err error
 		tail.file, err = OpenFile(tail.Filename)
 		tail.curOffset = 0
@@ -218,7 +218,7 @@ func (tail *Tail) reopen() error {
 // before finding the end-of-line bytes(often io.EOF), it returns the data read
 // before the error and the error itself.
 func (tail *Tail) readLine() (string, error) {
-	log.Printf("[CUSTOM] tail.go readLine")
+	// log.Printf("[CUSTOM] tail.go readLine")
 	if tail.Config.IsUTF16 {
 		return tail.readlineUtf16()
 	}
@@ -246,7 +246,7 @@ func (tail *Tail) readLine() (string, error) {
 }
 
 func (tail *Tail) readlineUtf16() (string, error) {
-	log.Printf("[CUSTOM] tail.go readlineUtf16")
+	// log.Printf("[CUSTOM] tail.go readlineUtf16")
 	tail.lk.Lock()
 	defer tail.lk.Unlock()
 
@@ -256,7 +256,7 @@ func (tail *Tail) readlineUtf16() (string, error) {
 	var resSize int
 
 	for {
-		log.Printf("[CUSTOM] tail.go readlineUtf16 loop")
+		// log.Printf("[CUSTOM] tail.go readlineUtf16 loop")
 		// Check LF
 		cur, err = tail.readSlice('\n')
 		// buffer size is even
@@ -349,7 +349,7 @@ func (tail *Tail) tailFileSync() {
 	var backupOffset int64
 	// Read line by line.
 	for {
-		log.Printf("[CUSTOM] tail.go readlineUtf16 loop")
+		// log.Printf("[CUSTOM] tail.go readlineUtf16 loop")
 		// do not set backupOffset in named pipes
 		if !tail.Pipe {
 			backupOffset = tail.curOffset
@@ -488,7 +488,7 @@ func (tail *Tail) waitForChanges() error {
 }
 
 func (tail *Tail) openReader() {
-	log.Printf("[CUSTOM] tail.go openReader")
+	// log.Printf("[CUSTOM] tail.go openReader")
 	tail.lk.Lock()
 	if tail.MaxLineSize > 0 {
 		// add 2 to account for newline characters
@@ -500,12 +500,12 @@ func (tail *Tail) openReader() {
 }
 
 func (tail *Tail) seekEnd() error {
-	log.Printf("[CUSTOM] tail.go seekEnd")
+	// log.Printf("[CUSTOM] tail.go seekEnd")
 	return tail.seekTo(SeekInfo{Offset: 0, Whence: os.SEEK_END})
 }
 
 func (tail *Tail) seekTo(pos SeekInfo) error {
-	log.Printf("[CUSTOM] tail.go seekTo")
+	// log.Printf("[CUSTOM] tail.go seekTo")
 	_, err := tail.file.Seek(pos.Offset, pos.Whence)
 	if err != nil {
 		return fmt.Errorf("Seek error on %s: %s", tail.Filename, err)
@@ -519,7 +519,7 @@ func (tail *Tail) seekTo(pos SeekInfo) error {
 // sendLine sends the line(s) to Lines channel, splitting longer lines
 // if necessary. Return false if rate limit is reached.
 func (tail *Tail) sendLine(line string, offset int64) bool {
-	log.Printf("[CUSTOM] tail.go sendLine")
+	// log.Printf("[CUSTOM] tail.go sendLine")
 	now := time.Now()
 	lines := []string{line}
 
@@ -554,13 +554,13 @@ func (tail *Tail) sendLine(line string, offset int64) bool {
 // meant to be invoked from a process's exit handler. Linux kernel may not
 // automatically remove inotify watches after the process exits.
 func (tail *Tail) Cleanup() {
-	log.Printf("[CUSTOM] tail.go Cleanup")
+	// log.Printf("[CUSTOM] tail.go Cleanup")
 	watch.Cleanup(tail.Filename)
 }
 
 // A wrapper of bufio ReadSlice
 func (tail *Tail) readSlice(delim byte) (line []byte, err error) {
-	log.Printf("[CUSTOM] tail.go readSlice")
+	// log.Printf("[CUSTOM] tail.go readSlice")
 	line, err = tail.reader.ReadSlice(delim)
 	tail.curOffset += int64(len(line))
 	return
@@ -568,7 +568,7 @@ func (tail *Tail) readSlice(delim byte) (line []byte, err error) {
 
 // A wrapper of bufio ReadByte
 func (tail *Tail) readByte() (b byte, err error) {
-	log.Printf("[CUSTOM] tail.go readByte")
+	// log.Printf("[CUSTOM] tail.go readByte")
 	b, err = tail.reader.ReadByte()
 	tail.curOffset += 1
 	return
@@ -576,7 +576,7 @@ func (tail *Tail) readByte() (b byte, err error) {
 
 // A wrapper of bufio UnreadByte
 func (tail *Tail) unreadByte() (err error) {
-	log.Printf("[CUSTOM] tail.go unreadByte")
+	// log.Printf("[CUSTOM] tail.go unreadByte")
 	err = tail.reader.UnreadByte()
 	tail.curOffset -= 1
 	return
@@ -584,7 +584,7 @@ func (tail *Tail) unreadByte() (err error) {
 
 // A wrapper of tomb Err()
 func (tail *Tail) UnexpectedError() (err error) {
-	log.Printf("[CUSTOM] tail.go UnexpextedError")
+	// log.Printf("[CUSTOM] tail.go UnexpextedError")
 	err = tail.Err()
 	// ignore the error ErrStillAlive and errStopAtEOF
 	if err == tomb.ErrStillAlive || err == errStopAtEOF {
@@ -594,7 +594,7 @@ func (tail *Tail) UnexpectedError() (err error) {
 }
 
 func (tail *Tail) exitOnDeletion() {
-	log.Printf("[CUSTOM] tail.go exitOnDeletion")
+	// log.Printf("[CUSTOM] tail.go exitOnDeletion")
 
 	ticker := time.NewTicker(exitOnDeletionCheckDuration)
 	defer ticker.Stop()
@@ -622,7 +622,7 @@ func (tail *Tail) exitOnDeletion() {
 // partitionString partitions the string into chunks of given size,
 // with the last chunk of variable size.
 func partitionString(s string, chunkSize int) []string {
-	log.Printf("[CUSTOM] tail.go partitionString")
+	// log.Printf("[CUSTOM] tail.go partitionString")
 	if chunkSize <= 0 {
 		panic("Invalid chunkSize")
 	}

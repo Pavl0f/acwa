@@ -96,7 +96,7 @@ type FileConfig struct {
 
 //Initialize some variables in the FileConfig object based on the rest info fetched from the configuration file.
 func (config *FileConfig) init() error {
-	log.Printf("[CUSTOM] fileconfig.go init")
+	// log.Printf("[CUSTOM] fileconfig.go init")
 	var err error
 	if !(config.Encoding == "" || config.Encoding == "utf_8" || config.Encoding == "utf-8" || config.Encoding == "utf8" || config.Encoding == "ascii") {
 		if config.Enc, _ = charset.Lookup(config.Encoding); config.Enc == nil {
@@ -166,7 +166,7 @@ func (config *FileConfig) init() error {
 //The parser logic will be based on the timestampFromLogLine regex, and time zone info.
 //If the parsing operation encounters any issue, int64(0) is returned.
 func (config *FileConfig) timestampFromLogLine(logValue string) time.Time {
-	log.Printf("[CUSTOM] fileconfig.go timestampFromLogLine")
+	// log.Printf("[CUSTOM] fileconfig.go timestampFromLogLine")
 	if config.TimestampRegexP == nil {
 		return time.Time{}
 	}
@@ -203,7 +203,7 @@ func (config *FileConfig) timestampFromLogLine(logValue string) time.Time {
 
 //This method determine whether the line is a start line for multiline log entry.
 func (config *FileConfig) isMultilineStart(logValue string) bool {
-	log.Printf("[CUSTOM] fileconfig.go isMultilineStart")
+	// log.Printf("[CUSTOM] fileconfig.go isMultilineStart")
 	if config.MultiLineStartPatternP == nil {
 		return false
 	}
@@ -211,7 +211,7 @@ func (config *FileConfig) isMultilineStart(logValue string) bool {
 }
 
 func ShouldPublish(logGroupName, logStreamName string, filters []*LogFilter, event logs.LogEvent) bool {
-	log.Printf("[CUSTOM] fileconfig.go ShouldPublish")
+	// log.Printf("[CUSTOM] fileconfig.go ShouldPublish")
 	if filters == nil || len(filters) == 0 {
 		return true
 	}
@@ -227,7 +227,7 @@ func ShouldPublish(logGroupName, logStreamName string, filters []*LogFilter, eve
 }
 
 func shouldPublishHelper(filters []*LogFilter, event logs.LogEvent) bool {
-	log.Printf("[CUSTOM] fileconfig.go shouldPublishHelper")
+	// log.Printf("[CUSTOM] fileconfig.go shouldPublishHelper")
 	for _, filter := range filters {
 		if !filter.ShouldPublish(event) {
 			return false
