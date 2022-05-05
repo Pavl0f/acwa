@@ -22,6 +22,7 @@ const (
 )
 
 func ToEnvConfig(jsonConfigValue map[string]interface{}) []byte {
+	log.Printf("[CUSTOM] toEnvConfig.go ToEnvConfig")
 	envVars := make(map[string]string)
 	// If csm has a configuration section, then also turn on csm for the agent itself
 	if _, ok := jsonConfigValue[csm.JSONSectionKey]; ok {

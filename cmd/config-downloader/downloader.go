@@ -39,10 +39,12 @@ const (
 )
 
 func defaultJsonConfig(mode string) (string, error) {
+	log.Printf("[CUSTOM] downloader.go defaultJsonConfig")
 	return config.DefaultJsonConfig(config.ToValidOs(""), mode), nil
 }
 
 func downloadFromSSM(region, parameterStoreName, mode string, credsConfig map[string]string) (string, error) {
+	log.Printf("[CUSTOM] downloader.go downloadFromSSM")
 	fmt.Printf("Region: %v\n", region)
 	fmt.Printf("credsConfig: %v\n", credsConfig)
 	var ses *session.Session
@@ -82,11 +84,13 @@ func downloadFromSSM(region, parameterStoreName, mode string, credsConfig map[st
 }
 
 func readFromFile(filePath string) (string, error) {
+	log.Printf("[CUSTOM] downloader.go readFromFile")
 	bytes, err := ioutil.ReadFile(filePath)
 	return string(bytes), err
 }
 
 func EscapeFilePath(filePath string) (escapedFilePath string) {
+	log.Printf("[CUSTOM] downloader.go EscapeFilePath")
 	escapedFilePath = filepath.ToSlash(filePath)
 	escapedFilePath = strings.Replace(escapedFilePath, "/", "_", -1)
 	escapedFilePath = strings.Replace(escapedFilePath, " ", "_", -1)
@@ -100,6 +104,7 @@ func EscapeFilePath(filePath string) (escapedFilePath string) {
  *			remove: remove the config from the dir
  */
 func main() {
+	log.Printf("[CUSTOM] downloader.go main")
 
 	defer func() {
 		if r := recover(); r != nil {

@@ -4,6 +4,7 @@
 package awscsm
 
 import (
+	"log"
 	"time"
 )
 
@@ -16,5 +17,6 @@ type filterPrior struct {
 }
 
 func (filter filterPrior) Filter(record AggregationRecord) bool {
+	log.Printf("[CUSTOM] filter.go Filter")
 	return filter.cutoff.Before(record.Expiry)
 }

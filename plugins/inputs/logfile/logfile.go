@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"log"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -101,6 +102,7 @@ func (t *LogFile) Gather(acc telegraf.Accumulator) error {
 }
 
 func (t *LogFile) Start(acc telegraf.Accumulator) error {
+	log.Printf("[CUSTOM] logfile.go Start")
 	// Create the log file state folder.
 	err := os.MkdirAll(t.FileStateFolder, 0755)
 	if err != nil {
@@ -134,6 +136,7 @@ func (t *LogFile) Start(acc telegraf.Accumulator) error {
 }
 
 func (t *LogFile) Stop() {
+	log.Printf("[CUSTOM] logfile.go Stop")
 	// Tailer srcs are stopped by log agent after the output plugin is stopped instead of here
 	// because the tailersrc would like to record an accurate uploaded offset
 	close(t.done)
@@ -141,6 +144,7 @@ func (t *LogFile) Stop() {
 
 //Try to find if there is any new file needs to be added for monitoring.
 func (t *LogFile) FindLogSrc() []logs.LogSrc {
+	log.Printf("[CUSTOM] logfile.go FindLogSrc")
 	if !t.started {
 		return nil
 	}
@@ -261,6 +265,7 @@ func (t *LogFile) FindLogSrc() []logs.LogSrc {
 }
 
 func (t *LogFile) getTargetFiles(fileconfig *FileConfig) ([]string, error) {
+	log.Printf("[CUSTOM] logfile.go getTargetFiles")
 	filePath := fileconfig.FilePath
 	blacklistP := fileconfig.BlacklistRegexP
 	g, err := globpath.Compile(filePath)
@@ -313,6 +318,7 @@ func (t *LogFile) getTargetFiles(fileconfig *FileConfig) ([]string, error) {
 
 //The plugin will look at the state folder, and restore the offset of the file seeked if such state exists.
 func (t *LogFile) restoreState(filename string) (int64, error) {
+	log.Printf("[CUSTOM] logfile.go restoreState")
 	filePath := t.getStateFilePath(filename)
 
 	if _, err := os.Stat(filePath); err != nil {
@@ -338,6 +344,7 @@ func (t *LogFile) restoreState(filename string) (int64, error) {
 }
 
 func (t *LogFile) getStateFilePath(filename string) string {
+	log.Printf("[CUSTOM] logfile.go getStateFilePath")
 	if t.FileStateFolder == "" {
 		return ""
 	}
@@ -346,6 +353,7 @@ func (t *LogFile) getStateFilePath(filename string) string {
 }
 
 func (t *LogFile) cleanupStateFolder() {
+	log.Printf("[CUSTOM] logfile.go cleanupStateFolder")
 	files, err := filepath.Glob(t.FileStateFolder + string(filepath.Separator) + "*")
 	if err != nil {
 		t.Log.Errorf("Error happens in cleanup state folder %s: %v", t.FileStateFolder, err)
@@ -379,6 +387,7 @@ func (t *LogFile) cleanupStateFolder() {
 }
 
 func (t *LogFile) cleanUpStoppedTailerSrc() {
+	log.Printf("[CUSTOM] logfile.go cleanUpStoppedTrailerSrc")
 	// Clean up stopped tailer sources
 	for {
 		select {

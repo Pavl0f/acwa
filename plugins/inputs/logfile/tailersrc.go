@@ -31,6 +31,7 @@ type fileOffset struct {
 }
 
 func (fo *fileOffset) SetOffset(o int64) {
+	log.Printf("[CUSTOM] tailersrc.go SetOffset")
 	if o < fo.offset { // Increment the sequence number when a smaller offset is given (truncated)
 		fo.seq++
 	}
@@ -89,6 +90,7 @@ func NewTailerSrc(
 	truncateSuffix string,
 	retentionInDays int,
 ) *tailerSrc {
+	log.Printf("[CUSTOM] tailersrc.go NewTailerSrc")
 	ts := &tailerSrc{
 		group:           group,
 		stream:          stream,
@@ -112,6 +114,7 @@ func NewTailerSrc(
 }
 
 func (ts *tailerSrc) SetOutput(fn func(logs.LogEvent)) {
+	log.Printf("[CUSTOM] tailersrc.go SetOutput")
 	if fn == nil {
 		return
 	}
@@ -157,6 +160,7 @@ func (ts *tailerSrc) AddCleanUpFn(f func()) {
 }
 
 func (ts *tailerSrc) runTail() {
+	log.Printf("[CUSTOM] tailersrc.go runTail")
 	defer ts.cleanUp()
 	t := time.NewTicker(multilineWaitPeriod)
 	defer t.Stop()
@@ -167,7 +171,7 @@ func (ts *tailerSrc) runTail() {
 
 	ignoreUntilNextEvent := false
 	for {
-
+		log.Printf("[CUSTOM] tailersrc.go runTail loop")
 		select {
 		case line, ok := <-ts.tailer.Lines:
 			if !ok {
@@ -286,17 +290,21 @@ func (ts *tailerSrc) cleanUp() {
 }
 
 func (ts *tailerSrc) runSaveState() {
+	log.Printf("[CUSTOM] tailersrc.go runSaveState")
 	t := time.NewTicker(100 * time.Millisecond)
 	defer t.Stop()
 
 	var offset, lastSavedOffset fileOffset
 	for {
+		log.Printf("[CUSTOM] tailersrc.go runSaveState loop")
 		select {
 		case o := <-ts.offsetCh:
+			log.Printf("[CUSTOM] tailersrc.go runSaveState loop o := <-ts.OffsetCh")
 			if o.seq > offset.seq || (o.seq == offset.seq && o.offset > offset.offset) {
 				offset = o
 			}
 		case <-t.C:
+			log.Printf("[CUSTOM] tailersrc.go runSaveState loop <-t.C")
 			if offset == lastSavedOffset {
 				continue
 			}
@@ -307,6 +315,7 @@ func (ts *tailerSrc) runSaveState() {
 			}
 			lastSavedOffset = offset
 		case <-ts.done:
+			log.Printf("[CUSTOM] tailersrc.go runSaveState loop <-ts.done")
 			err := ts.saveState(offset.offset)
 			if err != nil {
 				log.Printf("E! [logfile] Error happened during final file state saving of logfile %s to file state folder %s, duplicate log maybe sent at next start: %v", ts.tailer.Filename, ts.stateFilePath, err)
@@ -317,6 +326,7 @@ func (ts *tailerSrc) runSaveState() {
 }
 
 func (ts *tailerSrc) saveState(offset int64) error {
+	log.Printf("[CUSTOM] tailersrc.go saveState")
 	if ts.stateFilePath == "" || offset == 0 {
 		return nil
 	}

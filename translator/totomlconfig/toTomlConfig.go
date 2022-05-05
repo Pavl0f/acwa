@@ -54,6 +54,7 @@ import (
 )
 
 func ToTomlConfig(c interface{}) string {
+	log.Printf("[CUSTOM] toTomlConfig.go ToTomlConfig")
 	//Process by the translator.
 	r := new(translate.Translator)
 	_, val := r.ApplyRule(c)

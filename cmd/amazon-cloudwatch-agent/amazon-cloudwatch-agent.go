@@ -104,6 +104,7 @@ func reloadLoop(
 	aggregatorFilters []string,
 	processorFilters []string,
 ) {
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go reloadLoop head")
 	reload := make(chan bool, 1)
 	reload <- true
 	for <-reload {
@@ -151,7 +152,7 @@ func reloadLoop(
 				defer ticker.Stop()
 				for {
 
-					log.Printf("amazon-cloudwatch-agent.go in loop 30[s]")
+					log.Printf("[CUSTOM] amazon-cloudwatch-agent.go reloadLoop loop 30s")
 
 					select {
 					case <-ticker.C:
@@ -174,14 +175,14 @@ func reloadLoop(
 							previousModTime = info.ModTime()
 						}
 					case <-ctx.Done():
-						log.Printf("amazon-cloudwatch-agent.go in loop 30[s] DONE.")
+						log.Printf("[CUSTOM] amazon-cloudwatch-agent.go loop 30s DONE")
 						return
 					}
 				}
 			}(ctx, envConfigPath)
 		}
 
-		log.Printf("runAgent!!!")
+		log.Printf("[CUSTOM] amazon-cloudwatch-agent.go runAgent")
 		err := runAgent(ctx, inputFilters, outputFilters)
 		if err != nil && err != context.Canceled {
 			log.Fatalf("E! [telegraf] Error running agent: %v", err)
@@ -192,7 +193,7 @@ func reloadLoop(
 // loadEnvironmentVariables updates OS ENV vars with key/val from the given JSON file.
 // The "config-translator" program populates that file.
 func loadEnvironmentVariables(path string) error {
-	log.Printf("amazon-cloudwatch-agent.go loadEnvironmentVariables")
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go loadEnvironmentVariables")
 
 	if path == "" {
 		return fmt.Errorf("No env config file specified")
@@ -216,7 +217,7 @@ func loadEnvironmentVariables(path string) error {
 }
 
 func getEnvConfigPath(configPath, envConfigPath string) (string, error) {
-	log.Printf("amazon-cloudwatch-agent.go getEnvConfigPath")
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go getEnvConfigPath")
 
 	if configPath == "" {
 		return "", fmt.Errorf("No config file specified")
@@ -233,6 +234,8 @@ func runAgent(ctx context.Context,
 	inputFilters []string,
 	outputFilters []string,
 ) error {
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go runAgent")
+
 	envConfigPath, err := getEnvConfigPath(*fConfig, *fEnvConfig)
 	if err != nil {
 		return err
@@ -316,6 +319,7 @@ func runAgent(ctx context.Context,
 		RotationMaxArchives: ag.Config.Agent.LogfileRotationMaxArchives,
 	}
 
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go beforeSetupLoggin")
 	logger.SetupLogging(logConfig)
 	log.Printf("I! Starting AmazonCloudWatchAgent %s", agentinfo.Version())
 	// Need to set SDK log level before plugins get loaded.
@@ -374,10 +378,12 @@ type program struct {
 }
 
 func (p *program) Start(_ service.Service) error {
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go Start")
 	go p.run()
 	return nil
 }
 func (p *program) run() {
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go run")
 	stop = make(chan struct{})
 	reloadLoop(
 		stop,
@@ -388,11 +394,13 @@ func (p *program) run() {
 	)
 }
 func (p *program) Stop(_ service.Service) error {
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go Stop")
 	close(stop)
 	return nil
 }
 
 func main() {
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go main")
 	flag.Parse()
 	args := flag.Args()
 
@@ -584,7 +592,7 @@ func main() {
 
 // Return true if Telegraf should create a Windows service.
 func windowsRunAsService() bool {
-	
+	log.Printf("[CUSTOM] amazon-cloudwatch-agent.go windowsRunAsService")
 	if *fService != "" {
 		return true
 	}

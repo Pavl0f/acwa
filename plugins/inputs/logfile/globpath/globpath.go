@@ -23,6 +23,7 @@ type GlobPath struct {
 }
 
 func Compile(path string) (*GlobPath, error) {
+	log.Printf("[CUSTOM] globpath.go Compile")
 	out := GlobPath{
 		hasMeta:      hasMeta(path),
 		hasSuperMeta: hasSuperMeta(path),
@@ -50,6 +51,7 @@ func Compile(path string) (*GlobPath, error) {
 }
 
 func (g *GlobPath) Match() map[string]os.FileInfo {
+	log.Printf("[CUSTOM] globpath.go Match")
 	if !g.hasMeta {
 		out := make(map[string]os.FileInfo)
 		info, err := os.Stat(g.path)
@@ -79,6 +81,7 @@ func (g *GlobPath) Match() map[string]os.FileInfo {
 // walk the filepath from the given root and return a list of files that match
 // the given glob.
 func walkFilePath(root string, g glob.Glob) map[string]os.FileInfo {
+	log.Printf("[CUSTOM] globpath.go walkFilePath")
 	matchedFiles := make(map[string]os.FileInfo)
 	walkfn := func(path string, info os.FileInfo, _ error) error {
 		if info != nil && g.Match(path) {
@@ -97,6 +100,7 @@ func walkFilePath(root string, g glob.Glob) map[string]os.FileInfo {
 //   /home/*/** ->             /home
 //   /lib/share/*/*/**.txt ->  /lib/share
 func findRootDir(path string) string {
+	log.Printf("[CUSTOM] globpath.go findRootDir")
 	pathItems := strings.Split(path, sepStr)
 	out := sepStr
 	for i, item := range pathItems {

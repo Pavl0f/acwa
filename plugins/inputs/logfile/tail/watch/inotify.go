@@ -20,11 +20,13 @@ type InotifyFileWatcher struct {
 }
 
 func NewInotifyFileWatcher(filename string) *InotifyFileWatcher {
+	log.Printf("[CUSTOM] inotify.go NewInotifyFileWatcher")
 	fw := &InotifyFileWatcher{filepath.Clean(filename), 0}
 	return fw
 }
 
 func (fw *InotifyFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
+	log.Printf("[CUSTOM] inotify.go BlockUntilExists")
 	err := WatchCreate(fw.Filename)
 	if err != nil {
 		return err
@@ -41,6 +43,7 @@ func (fw *InotifyFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
 	events := Events(fw.Filename)
 
 	for {
+		log.Printf("[CUSTOM] inotify.go BlockUntilExists loop")
 		select {
 		case evt, ok := <-events:
 			if !ok {
@@ -64,7 +67,7 @@ func (fw *InotifyFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
 }
 
 func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChanges, error) {
-	log.Printf("inotify.go ChangeEvents")
+	log.Printf("[CUSTOM] inotify.go ChangeEvents")
 	err := Watch(fw.Filename)
 	if err != nil {
 		return nil, err
@@ -78,7 +81,7 @@ func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 		events := Events(fw.Filename)
 
 		for {
-			log.Printf("inotify.go ChangeEvents for")
+			log.Printf("[CUSTOM] inotify.go ChangeEvents loop")
 			prevSize := fw.Size
 
 			var evt fsnotify.Event
@@ -87,10 +90,12 @@ func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 			select {
 			case evt, ok = <-events:
 				if !ok {
+					log.Printf("[CUSTOM] inotify.go ChangeEvents loop RemoveWatch")
 					RemoveWatch(fw.Filename)
 					return
 				}
 			case <-t.Dying():
+				log.Printf("[CUSTOM] inotify.go ChangeEvents loop Dying")
 				RemoveWatch(fw.Filename)
 				return
 			}
@@ -98,6 +103,7 @@ func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 			switch {
 			//With an open fd, unlink(fd) - inotify returns IN_ATTRIB (==fsnotify.Chmod)
 			case evt.Op&fsnotify.Chmod == fsnotify.Chmod:
+				log.Printf("[CUSTOM] inotify.go ChangeEvents fsnotify.Chmod")
 				if _, err := os.Stat(fw.Filename); err != nil {
 					if !os.IsNotExist(err) {
 						return
@@ -106,14 +112,17 @@ func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 				fallthrough
 
 			case evt.Op&fsnotify.Remove == fsnotify.Remove:
+				log.Printf("[CUSTOM] inotify.go ChangeEvents fsnotify.Remove")
 				fallthrough
 
 			case evt.Op&fsnotify.Rename == fsnotify.Rename:
+				log.Printf("[CUSTOM] inotify.go ChangeEvents fsnotify.Rename")
 				RemoveWatch(fw.Filename)
 				changes.NotifyDeleted()
 				return
 
 			case evt.Op&fsnotify.Write == fsnotify.Write:
+				log.Printf("[CUSTOM] inotify.go ChangeEvents fsnotify.Write")
 				fi, err := os.Stat(fw.Filename)
 				if err != nil {
 					if os.IsNotExist(err) {
@@ -126,8 +135,10 @@ func (fw *InotifyFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 				fw.Size = fi.Size()
 
 				if prevSize > 0 && prevSize > fw.Size {
+					log.Printf("[CUSTOM] inotify.go ChangeEvents NotifyTruncated")
 					changes.NotifyTruncated()
 				} else {
+					log.Printf("[CUSTOM] inotify.go ChangeEvents NotifyModified")
 					changes.NotifyModified()
 				}
 				prevSize = fw.Size

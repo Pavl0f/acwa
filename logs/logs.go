@@ -58,7 +58,7 @@ type LogAgent struct {
 }
 
 func NewLogAgent(c *config.Config) *LogAgent {
-	log.Printf("logs.go NewLogAgent")
+	log.Printf("[CUSTOM] logs.go NewLogAgent")
 	return &LogAgent{
 		Config:    c,
 		backends:  make(map[string]LogBackend),
@@ -70,6 +70,7 @@ func NewLogAgent(c *config.Config) *LogAgent {
 // And connect all the LogSrc from the LogCollection found to the respective LogDest
 // based on the configured "destination", and "name"
 func (l *LogAgent) Run(ctx context.Context) {
+	log.Printf("[CUSTOM] logs.go Run")
 	log.Printf("I! [logagent] starting")
 	for _, output := range l.Config.Outputs {
 		backend, ok := output.Output.(LogBackend)
@@ -94,14 +95,14 @@ func (l *LogAgent) Run(ctx context.Context) {
 	t := time.NewTicker(time.Second)
 	defer t.Stop()
 	for {
-		log.Printf("logs.go Run for loop")
+		log.Printf("[CUSTOM] logs.go Run loop")
 		select {
 		case <-t.C:
 			for _, c := range l.collections {
-				log.Printf("logs.go Run for loop2")
+				log.Printf("[CUSTOM] logs.go Run loop2")
 				srcs := c.FindLogSrc()
 				for _, src := range srcs {
-					log.Printf("logs.go Run for loop3")
+					log.Printf("[CUSTOM] logs.go Run loop3")
 					dname := src.Destination()
 					backend, ok := l.backends[dname]
 					if !ok {
@@ -115,13 +116,14 @@ func (l *LogAgent) Run(ctx context.Context) {
 				}
 			}
 		case <-ctx.Done():
-			log.Printf("logs.go Run DONE")
+			log.Printf("[CUSTOM] logs.go Run loop DONE")
 			return
 		}
 	}
 }
 
 func (l *LogAgent) runSrcToDest(src LogSrc, dest LogDest) {
+	log.Printf("[CUSTOM] logs.go runSrcToDest")
 	eventsCh := make(chan LogEvent)
 	defer src.Stop()
 
@@ -135,7 +137,6 @@ func (l *LogAgent) runSrcToDest(src LogSrc, dest LogDest) {
 	})
 
 	for e := range eventsCh {
-		// log.Printf("logs.go runSrcToDest")
 		err := dest.Publish([]LogEvent{e})
 		if err == ErrOutputStopped {
 			log.Printf("I! [logagent] Log destination %v has stopped, finalizing %v/%v", l.destNames[dest], src.Group(), src.Stream())

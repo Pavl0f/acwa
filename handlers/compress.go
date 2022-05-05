@@ -22,6 +22,7 @@ var gzipPool = sync.Pool{
 }
 
 func NewRequestCompressionHandler(opNames []string) request.NamedHandler {
+	log.Printf("[CUSTOM] compress.go NewRequestCompressionHandler")
 	return request.NamedHandler{
 		Name: "RequestCompressionHandler",
 		Fn: func(req *request.Request) {

@@ -18,6 +18,7 @@ import (
 )
 
 func MergeJsonConfigMaps(jsonConfigMapMap map[string]map[string]interface{}, defaultJsonConfigMap map[string]interface{}, multiConfig string) (map[string]interface{}, error) {
+	log.Printf("[CUSTOM] mergeJsonConfig.go MergeJsonConfigMaps")
 	if jsonConfigMapMap == nil || len(jsonConfigMapMap) == 0 {
 		if os.Getenv(config.USE_DEFAULT_CONFIG) == config.USE_DEFAULT_CONFIG_TRUE {
 			// When USE_DEFAULT_CONFIG is true, ECS and EKS will be supposed to use different default config. EKS default config logic will be added when necessary
@@ -62,6 +63,7 @@ func MergeJsonConfigMaps(jsonConfigMapMap map[string]map[string]interface{}, def
 }
 
 func Merge(source map[string]interface{}, result map[string]interface{}) {
+	log.Printf("[CUSTOM] mergeJsonConfig.go Merge")
 	for _, rule := range mergeJsonUtil.MergeRuleMap {
 		rule.Merge(source, result)
 	}

@@ -43,6 +43,8 @@ var (
 var runInContainer = os.Getenv(config.RUN_IN_CONTAINER)
 
 func translateConfig() error {
+	log.Printf("[CUSTOM] start-amazon-cloudwatch-agent.go translateConfig")
+
 	args := []string{"--output", tomlConfigPath, "--mode", "auto"}
 	if runInContainer == config.RUN_IN_CONTAINER_TRUE {
 		args = append(args, "--input-dir", CONFIG_DIR_IN_CONTAINE)
@@ -74,6 +76,7 @@ func translateConfig() error {
 }
 
 func main() {
+	log.Printf("[CUSTOM] start-amazon-cloudwatch-agent.go main")
 	var writer io.WriteCloser
 
 	if runInContainer != config.RUN_IN_CONTAINER_TRUE {

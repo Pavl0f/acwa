@@ -24,6 +24,8 @@ const (
 )
 
 func initFlags() {
+	log.Printf("[CUSTOM] translator.go initFlags")
+
 	var inputOs = flag.String("os", "", "Please provide the os preference, valid value: windows/linux.")
 	var inputJsonFile = flag.String("input", "", "Please provide the path of input agent json config file")
 	var inputJsonDir = flag.String("input-dir", "", "Please provide the path of input agent json config directory.")
@@ -69,7 +71,8 @@ func initFlags() {
  *			remove:		only process existing files
  */
 func main() {
-	log.Printf("translator.go main")
+	log.Printf("[CUSTOM] translator.go main")
+
 	initFlags()
 	defer func() {
 		if r := recover(); r != nil {

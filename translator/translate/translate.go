@@ -41,6 +41,8 @@ type Translator struct {
 }
 
 func (t *Translator) ApplyRule(input interface{}) (returnKey string, returnVal interface{}) {
+	log.Printf("[CUSTOM] translate.go ApplyRule")
+
 	m := input.(map[string]interface{})
 	result := map[string]interface{}{}
 	allInputPlugin := map[string]interface{}{}

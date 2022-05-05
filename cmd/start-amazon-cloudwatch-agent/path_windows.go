@@ -24,6 +24,8 @@ const (
 )
 
 func startAgent(writer io.WriteCloser) error {
+	log.Printf("[CUSTOM] path_windows.go startAgent")
+
 	if err := writer.Close(); err != nil {
 		log.Printf("E! Cannot close the log file, ERROR is %v \n", err)
 		return err
@@ -37,6 +39,8 @@ func startAgent(writer io.WriteCloser) error {
 }
 
 func init() {
+	log.Printf("[CUSTOM] path_windows.go init")
+
 	programFiles := os.Getenv("ProgramFiles")
 	var programData string
 	if _, ok := os.LookupEnv("ProgramData"); ok {

@@ -19,6 +19,7 @@ type PollingFileWatcher struct {
 }
 
 func NewPollingFileWatcher(filename string) *PollingFileWatcher {
+	log.Printf("[CUSTOM] polling.go NewPollingFileWatcher")
 	fw := &PollingFileWatcher{filename, 0}
 	return fw
 }
@@ -26,6 +27,7 @@ func NewPollingFileWatcher(filename string) *PollingFileWatcher {
 var POLL_DURATION time.Duration
 
 func (fw *PollingFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
+	log.Printf("[CUSTOM] polling.go BlockUntilExists")
 	for {
 		if _, err := os.Stat(fw.Filename); err == nil {
 			return nil
@@ -42,7 +44,7 @@ func (fw *PollingFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
 }
 
 func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChanges, error) {
-	log.Printf("polling.go ChangeEvents")
+	log.Printf("[CUSTOM] polling.go ChangeEvents")
 	origFi, err := os.Stat(fw.Filename)
 	if err != nil {
 		return nil, err
@@ -59,11 +61,11 @@ func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 	go func() {
 		prevSize := fw.Size
 		for {
-			log.Printf("polling.go ChangeEvents loop")
+			log.Printf("[CUSTOM] polling.go ChangeEvents loop")
 
 			select {
 			case <-t.Dying():
-				log.Printf("polling.go ChangeEvents loop Dying")
+				log.Printf("[CUSTOM] polling.go ChangeEvents loop Dying")
 				return
 			default:
 			}
@@ -84,7 +86,7 @@ func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 
 			// File got moved/renamed?
 			if !os.SameFile(origFi, fi) {
-				log.Printf("polling.go ChangeEvents moved/renamed")
+				log.Printf("[CUSTOM] polling.go ChangeEvents moved/renamed")
 				changes.NotifyDeleted()
 				return
 			}
@@ -92,14 +94,14 @@ func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 			// File got truncated?
 			fw.Size = fi.Size()
 			if prevSize > 0 && prevSize > fw.Size {
-				log.Printf("polling.go ChangeEvents truncated")
+				log.Printf("[CUSTOM] polling.go ChangeEvents truncated")
 				changes.NotifyTruncated()
 				prevSize = fw.Size
 				continue
 			}
 			// File got bigger?
 			if prevSize > 0 && prevSize < fw.Size {
-				log.Printf("polling.go ChangeEvents bigger")
+				log.Printf("[CUSTOM] polling.go ChangeEvents bigger")
 				changes.NotifyModified()
 				prevSize = fw.Size
 				continue
@@ -109,7 +111,7 @@ func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 			// File was appended to (changed)?
 			modTime := fi.ModTime()
 			if modTime != prevModTime {
-				log.Printf("polling.go ChangeEvents appended")
+				log.Printf("[CUSTOM] polling.go ChangeEvents appended")
 				prevModTime = modTime
 				changes.NotifyModified()
 			}
@@ -120,6 +122,6 @@ func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChange
 }
 
 func init() {
-	log.Printf("polling.go init")
+	log.Printf("[CUSTOM] polling.go init")
 	POLL_DURATION = 250 * time.Millisecond
 }

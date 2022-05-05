@@ -5,6 +5,7 @@ package main
 
 import (
 	"bufio"
+	"log"
 	"flag"
 	"fmt"
 	"os"
@@ -31,6 +32,8 @@ var MainProcessorGlobal IMainProcessor = &MainProcessorStruct{}
 var isNonInteractiveWindowsMigration *bool
 
 func main() {
+	log.Printf("[CUSTOM] wizard.go main")
+
 	// Parse command line args for non-interactive Windows migration
 	isNonInteractiveWindowsMigration = flag.Bool("isNonInteractiveWindowsMigration", false,
 		"If true, it will use command line args to bypass the wizard. Default value is false.")
@@ -67,6 +70,8 @@ func main() {
 }
 
 func init() {
+	log.Printf("[CUSTOM] wizard.go init")
+
 	stdin.Scanln = func(a ...interface{}) (n int, err error) {
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
@@ -81,6 +86,7 @@ func init() {
 }
 
 func addWindowsMigrationInputs(configFilePath string, parameterStoreName string, parameterStoreRegion string, useParameterStore bool) {
+	log.Printf("[CUSTOM] wizard.go addWindowsMigrationInputs")
 	inputChan := testutil.SetUpTestInputStream()
 	if useParameterStore {
 		testutil.Type(inputChan, "2", "1", "2", "1", configFilePath, "1", parameterStoreName, parameterStoreRegion, "1")
@@ -90,12 +96,14 @@ func addWindowsMigrationInputs(configFilePath string, parameterStoreName string,
 }
 
 func process(ctx *runtime.Context, config *data.Config, processors ...processors.Processor) {
+	log.Printf("[CUSTOM] wizard.go process")
 	for _, processor := range processors {
 		processor.Process(ctx, config)
 	}
 }
 
 func startProcessing() {
+	log.Printf("[CUSTOM] wizard.go startProcessing")
 	ctx := new(runtime.Context)
 	config := new(data.Config)
 
