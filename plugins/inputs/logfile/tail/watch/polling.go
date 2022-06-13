@@ -44,7 +44,7 @@ func (fw *PollingFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
 }
 
 func (fw *PollingFileWatcher) ChangeEvents(t *tomb.Tomb, pos int64) (*FileChanges, error) {
-	log.Printf("[CUSTOM] polling.go ChangeEvents")
+	log.Printf("[CUSTOM] polling.go ChangeEvents filename="+fw.Filename)
 	origFi, err := os.Stat(fw.Filename)
 	if err != nil {
 		return nil, err
